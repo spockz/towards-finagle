@@ -241,7 +241,7 @@
           - 2-8 Spray instances running on one machine echoing the request and checking for auth. headers
         </section>
         <section data-markdown>
-          #### Performance metrics (todo, add gatling screenshots)
+          #### Performance metrics
           - 5500 vs 4200 (initially ±200-400) RPS
           - Finagle showed a smoother profile, with Ribbon we saw large GC cycles
           - Finagle had slightly lower response times
@@ -254,7 +254,12 @@
         </section>
 
         <section data-markdown>
-          #### Reliability (todo, bulletpoint)
+          #### Reliability
+          * Both *Finagle* and *Ribbon* detected failure as specified,
+          * The *Finagle* solution could respond to pushes of new instances where
+            we only got *Ribbon* to work with pushes.
+          * *Ribbon* distributed the load evenly on low rps, *Finagle* was fair,
+            better on high-rps.
           Note:
           - Detection of failing instances (after kill of spray instance) was detected according to specs by both Finagle and Resilience
           - The Finagle solution could respond to change on pushes whereas the Ribbon solution could only poll resulting in changes only being picked up after 30 seconds. Nothing really wrong with that, just that ‘instantly’ is better.
@@ -264,6 +269,11 @@
 
         <section data-markdown>
           ### Maintainability
+          * Helpful community ([mailing list](https://groups.google.com/forum/#!forum/finaglers), [gitter](https://gitter.im/twitter/finagle))
+          * *Finagle* is a RPC framework, *Ribbon* is purely for HTTP
+          * *Finagle* is composable, *Ribbon* is more static
+          * *Finagle* different modules are in the same style
+
           Note:
           - Finagle’s community was and is very helpful on the mailing list and Gitter
           - Finagle is a generic RPC framework so, in contrast to Ribbon, it is re-usable for more than only the HTTP Client. This also makes it easy to re-use the integration with ING Bank infrastructure: our filters and SD integration.
@@ -306,7 +316,7 @@
           Note:
           TL;DR: Finagle is very modular and easy to extend due to the
           application of Functional Programming principles and methods:
-          composability over inheritance (ToDo: is it really a comparison?)
+          composability over inheritance
         </section>
 
 
@@ -364,7 +374,7 @@
           > dependentVar.sample
           res9: Int = 8
           > myVar.update(21)
-          _void_
+
           > dependentVar.sample
           res11: Int = 42
           ```
@@ -382,7 +392,9 @@
               * `Failed` - Something went wrong,
               * `Neg` - Name could not be found,
               * `Pending` - Pending lookup,
+        </section>
 
+        <section data-markdown>
           ```scala
           val boundAddr: Var[Addr] = new ReadWriteVar(Addr.Pending)
           val boundName = Name.Bound(boundAddr)
@@ -393,14 +405,24 @@
 
         <section data-markdown>
           ### `Stack`
-          - Uninstantied stack of filter to be, service factories, together with their configurations.
-          - ToDo: Insert example of how to change FA config and how to replace the `Failure Accrual` as a whole
+          Uninstantied stack of filter to be, service factories, together with their configurations.
           ![stacks](images/clientstack.svg)
+          Note:
+          * Default stack for clients
         </section>
 
+<!--
+        <section data-markdown>
+          - ToDo: Insert example of how to change FA config and how to replace the `Failure Accrual` as a whole
+        </section>
+-->
         <section data-markdown>
           ### Example: HTTP Call
-          todo!
+          ```scala
+          val connection = Http.client.newService("www.twitter.com:80")
+          val request    = RequestBuilder().url("www.twitter.com/").buildGet()
+          val futureRep  = connection(request)
+          ```
         </section>
 
         <section data-markdown>
@@ -411,20 +433,76 @@
 
         <section data-markdown>
           ### Integrating Service-Discovery
-          Todo
+          ```scala
+          case class Instance(address: SocketAddress)
+
+          trait ServiceDiscovery {
+            def discover(name: String) : Observable[Set[Instance]]
+          }
+          ```
+        </section>
+
+        <section data-markdown>
+```scala
+class OurResolver(discovery: ServiceDiscovery) {
+  def eval(name: String): Name = {
+    val instances = discovery.discover(name)
+    val res: Var[Addr] = Var.async[Addr](Addr.Pending) {
+      (updatable: Updatable[Addr]) =>
+        val subscriber =
+          instances.subscribe { instanceSet =>
+            updatable.update(Addr.Bound(instanceSet.map(_.address)))
+          }
+        instances.doOnError { reason =>
+          updatable.update(Addr.Failed(reason))
+        }
+        Closable.make(_ => Future(subscriber.unsubscribe()))
+    }
+    Name.Bound.singleton(res)
+  }
+}
+```
         </section>
 
         <section data-markdown>
           ### Integrating Health Logging
           ```scala
-          todo: copy code
+          class HealthFilter[Req, Rep](component: Component, health: Health)
+            extends SimpleFilter[Req, Rep] {
+
+            def apply(request: Req, underlying: Service[Req, Rep]) : Future[Rep] = {
+              underlying(request) onSuccess { _ =>
+                health.healthy(component)
+              } onFailure {
+                case _: FailedFastException => health.broken(component)
+                case _ =>
+              }
+            }
+          }
+          ```
+          ```scala
+          val connection: Service[Request, Response] = Http.newService()
+          val monitoredConnection =
+            new HealthFilter(Component("api-x"), Health) andThen connection
           ```
         </section>
 
         <section data-markdown>
           ### Integrating Authentication
           ```scala
-          todo: copy code
+          case class RequestWithAuth(request: Request, auth: AuthContext)
+          class AuthFilter[Rep](appName: String)
+            extends SimpleFilter[RequestWithAuth, Rep] {
+
+            def apply(request: Req, underlying: Service[Req, Rep]) : Future[Rep] = {
+              underlying(request) onSuccess { _ =>
+                health.healthy(component)
+              } onFailure {
+                case _: FailedFastException => health.broken(component)
+                case _ =>
+              }
+            }
+          }
           ```
         </section>
 
@@ -437,8 +515,12 @@
         </section>
 
         <section data-markdown>
-          ### Finagle is not all roses (todo: bullet)
-          * The default config are good for 80-99% of all use cases, but for optimal performance and resilience an intimate knowledge of both Finagle and the infrastructure is required. It also requires careful configuration according to the infrastructure. Which means that changes in infrastructure can lead to difficult changes in the config. The latter is being countered by using Goals, datatypes that describe what performance / resiliency is tried to be obtained. For more, see the RPC Redux talk (http://monkey.org/~marius/redux.html)
+          ### Finagle is not all roses
+
+          * Default config good 80-99% of the time
+          * Special cases require intimate knowledge of both Finagle and infrastructure
+          * Configuratoin is static so adapting to changes in the environment is hard.
+          * For more, see the [RPC Redux talk](http://monkey.org/~marius/redux.html)
           * We had to build our own Java 7 interfaces, such as a HTTP Request Builder with support for JSON and such, but also because of the Scala type evidence didn’t really play nice with the Java compiler.
         </section>
 
@@ -499,6 +581,7 @@
     progress: true,
     history: true,
     center: true,
+
 
     transition: 'slide', // none/fade/slide/convex/concave/zoom
 
