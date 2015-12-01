@@ -422,13 +422,26 @@
           val connection = Http.client.newService("www.twitter.com:80")
           val request    = RequestBuilder().url("www.twitter.com/").buildGet()
           val futureRep  = connection(request)
+          // Blocking
+          println Await.result(futureRep)
+          // Nonblocking
+          futureRep onSuccess println
+          Await.ready(futureRep)
           ```
         </section>
 
         <section data-markdown>
-          ### Example: Adding Time-out
-          todo1: with within()
-          todo2: with filter
+### Example: Adding Time-out
+```scala
+implicit val timer = DefaultTimer.twitter
+connection(request).within(Duration.fromMilliseconds(30))
+```
+```scala
+val timeoutFilter =
+  new TimeoutFilter[Request, Response](Duration.fromMilliseconds(30),
+                                       DefaultTimer.twitter)
+val timedConnection = timeoutFilter.andThen(connection)
+```
         </section>
 
         <section data-markdown>
