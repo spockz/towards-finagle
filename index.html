@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>reveal.js – The HTML Presentation Framework</title>
+  <title>Towards Scala with Finagle at ING Bank</title>
 
   <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
   <meta name="author" content="Hakim El Hattab">
@@ -33,14 +33,23 @@
   <script src="lib/js/html5shiv.js"></script>
   <![endif]-->
 
-  <style type="text/css">
-  .reveal .footer {
-    position: absolute;
-    bottom: 1em;
-    left: 1em;
-    font-size: 0.5em;
+  <style type="text/css" >
+  @media all {
+    .reveal .footer {
+      position: absolute;
+      bottom: 1em;
+      left: 1em;
+      font-size: 0.5em;
+    }
   }
-  </style>
+  /*@media print {
+  .reveal .slides section .slide-background {
+  background-image: url('images/logo.hd.png');
+  background-repeat: no-repeat;
+  background-position: left bottom;
+}
+}*/
+</style>
 </head>
 
 <body>
@@ -51,40 +60,56 @@
     <div class="slides">
 
       <section data-markdown>
-        ## Towards Finagle at ING Bank
-        #### How we started to use Finagle and how it opened the door for FP
+        ### Towards Scala with Finagle @ ING Bank
+
+      </section>
+
+      <section data-markdown>
+        ### Towards ~~Scala~~ Functional Programming with Finagle @ ING Bank
+        Note:
+        * Many talks are on how to get Scala at enterprise, I believe it should be about FP not just Scala
+        * I'm going to illustrate this through sharing how adopting Finagle has accelarated the acceptance
+        of FP at ING Bank and that the FP aspects of Finagle helped a lot.
+      </section>
+
+      <section data-markdown>
+        ### Who am I
+        * Committed Functional Programmer for 8 years, in Haskell and Scala.
+        * FP evangelist at ING Bank
+        * Maintainer of core libraries and frameworks
+        * Trainer in functional and reactive programming with Scala and Akka
+        * Gets excited by opportunities to remove redundant code through abstraction.
+        * Volleyball enthousiast, and referee
+        * https://github.com/spockz
+      </section>
+
+      <section data-markdown>
+        ### Today
+        * ING Bank & Scala
+        * 'Breakthrough'
+        * Our task
+        * Finagle
+        * Retrospective on Finagle
+        * Future
+        * Conclusion
       </section>
 
       <section>
-
-        <section data-markdown>
-          ### Who am I
-          * Committed Functional Programmer for 8 years, in Haskell and Scala.
-          * FP evangelist at ING Bank
-          * Maintainer of core libraries and frameworks
-          * Trainer in functional and reactive programming with Scala and Akka
-          * Gets excited by opportunities to remove redundant code through abstraction.
-          * Volleyball enthousiast, and referee
-          * https://github.com/spockz
-        </section>
-
         <section data-markdown>
           ### Scala @ ING Bank
           - 3 years in the making
-          - Multiple PoCs and products build on FP/Scala based technology, with Akka/Spray, Akka Clustering, Event-Sourcing
-          - All technically sound solutions, however, somehow, they didn’t stick
+          - Small, sound, projects w/o follup
 
           Note:
+          - Somehow the successful projects didn't get followed up by other succesful Scala projects
           - perhaps because of not enough developers and unfamiliarity with the code
         </section>
 
         <section data-markdown>
           ### The 'breakthrough'
-          * Battle on multiple fronts
-          * Gaining enough credits and kudos personally and for FP/Scala
-          * Exposure, exposure, exposure
-          * Move away from "Java vs Scala" discussion, the discussion is about paradigms instead of the latest hype
-          * Objective PoC that showed Finagle (FP/Scala tech) was best for us
+          * Exposure, promotion
+          * "Java vs Scala" -> "Functional Programming"
+          * Fact-based proof through PoC
 
           Note:
           - 2+ years of advertisement
@@ -104,7 +129,7 @@
 
       <section>
         <section data-markdown>
-          ## Proof of Concept
+          ## Our Task
 
           Note:
           This is what gave us the 'permission' to keep doing scala
@@ -112,12 +137,9 @@
 
         <section data-markdown>
           ### Background
-          * Current landscape consists of SOAP/XML over JMS. A SOAP operation per customer facing feature.
-          * Drawbacks
-          * Busses become critical for operation
-          * Hard to maintain and to use find
-          * Moving to "outside-in" designed APIs or microservices
-          * Resiliency is paramount
+
+          * From SOAP/XML / JMS
+          * To REST API, microservices
 
           Note:
           - Current ING Landscape
@@ -141,13 +163,15 @@
         <section data-markdown>
           ### Our Mission
           > Create a “Resilient HTTP Client” to connect with and between APIS, which integrates / interfaces with existing ING Bank infrastructure
+          Note:
+          * One of the tasks of the API Platform
         </section>
         <section data-markdown>
           #### Requirements
           - Performance logging
           - Health logging
           - Security / Authentication
-          - Service Discovery
+          - Service Discovery (zookeeper)
           - Uniform Configuration
         </section>
         <section data-markdown>
@@ -156,7 +180,7 @@
           - JVM 6+,
           - J2EE Independent
           - Requirement from the team
-          - We wanted to use our time efficiently and spent most of our time implementing ING Bank specific features.
+            > We want to use our time efficiently and spent most of our time implementing ING Bank specific features.
         </section>
 
         <section data-markdown>
@@ -166,7 +190,7 @@
           - Apache HTTP
           - Jersey Client
           - Ribbon / Spring Cloud
-          - Finagle
+          - *Finagle*
 
           Note:
           - Choose to PoC between Ribbon and Finagle even though it was
@@ -175,154 +199,15 @@
           was proven to work by and within our home-brew API Framework.
         </section>
       </section>
-      <section>
-        <section data-markdown>
-          ## PoC Results
-          Note:
-          - Disclaimer:
-          - These findings are from april 2015, code and documentation may
-          have changed. We also might just have missed things. The following
-          is only intended to explain why Finagle works for us and does not
-          represent any qualitative opinion about Ribbon.
-        </section>
 
-        <section data-markdown>
-          ### Service Discovery
-          * *Finagle*: 1 morning
-          * *Ribbon*: Multiple days
-          Note:
-          Integrating Finagle with the existing library took a single person
-          one morning, including writing testcases. It took multiple days with
-          multiple developers to do the same for Ribbon, in the end because of
-          a ‘magic’ missing dependency from a seemingly unrelated artefact.
-          Additionally, it was hard to figure out where to plugin our SD
-          implementation in Ribbon as we had to reverse-engineer the
-          source-code.
-        </section>
-
-        <section data-markdown>
-          ### Performance logging
-          * *Finagle*: as easy as adding a dependency
-          * *Ribbon*:
-            * Custom template
-            * Create a class in Ribbon package
-
-          Note:
-          - Adding export of performance metrics to Graphite was as easy as adding a dependency to the class path.
-          - It was hard to do for Ribbon, in the end it was possible by not using the default template, placing our class in a ribbon package and extending a ribbon class. Probably, this could have been done easier.
-        </section>
-
-        <section data-markdown>
-          ### Health logging
-          - *Finagle*
-            1. Adding an Observer to the Observer filter, or
-            2. Adding a Filter
-          - *Ribbon*: Due to time constraints we didn’t get started at this
-          Note:
-          * We choose to add a filter instead of the Observer
-        </section>
-
-        <section data-markdown>
-          ### Security / Authentication
-          * *Finagle*:
-            * Additional filter and datatype wrapping the auth context and the
-              http request.
-          * *Ribbon*: adding to the template for every request was easy, doing it
-            per request was hard.
-        </section>
-
-        <section data-markdown>
-          ### Performance and Reliability
-        </section>
-        <section data-markdown>
-          #### Setup
-          - 1 machine running Gatling talking to
-          - 1 machine running production like setup (Tomcat 7 + Jersey + BIO adapter) talking to
-          - 2-8 Spray instances running on one machine echoing the request and checking for auth. headers
-        </section>
-        <section data-markdown>
-          #### Performance metrics
-          - 5500 vs 4200 (initially ±200-400) RPS
-          - Finagle showed a smoother profile, with Ribbon we saw large GC cycles
-          - Finagle had slightly lower response times
-          - Less CPU utilisation when using Finagle, suggesting a different bottleneck
-
-          Note:
-          - Both use Netty in the end… so why the difference?
-          - We didn't test all different sizes, especially only the smaller
-          messages < 8kb
-        </section>
-
-        <section data-markdown>
-          #### Reliability
-          * Both *Finagle* and *Ribbon* detected failure as specified,
-          * The *Finagle* solution could respond to pushes of new instances where
-            we only got *Ribbon* to work with pushes.
-          * *Ribbon* distributed the load evenly on low rps, *Finagle* was fair,
-            better on high-rps.
-          Note:
-          - Detection of failing instances (after kill of spray instance) was detected according to specs by both Finagle and Resilience
-          - The Finagle solution could respond to change on pushes whereas the Ribbon solution could only poll resulting in changes only being picked up after 30 seconds. Nothing really wrong with that, just that ‘instantly’ is better.
-          - Coming back up to full speed after instances where lost was hard for Ribbon (ToDo: Do we still have metrics / results for this?)
-          - Ribbon distributed the load more evenly on low rps
-        </section>
-
-        <section data-markdown>
-          ### Maintainability
-          * Helpful community ([mailing list](https://groups.google.com/forum/#!forum/finaglers), [gitter](https://gitter.im/twitter/finagle))
-          * *Finagle* is a RPC framework, *Ribbon* is purely for HTTP
-          * *Finagle* is composable, *Ribbon* is more static
-          * *Finagle* different modules are in the same style
-
-          Note:
-          - Finagle’s community was and is very helpful on the mailing list and Gitter
-          - Finagle is a generic RPC framework so, in contrast to Ribbon, it is re-usable for more than only the HTTP Client. This also makes it easy to re-use the integration with ING Bank infrastructure: our filters and SD integration.
-          - There are several projects to integrate finagle with other things: Zookeeper, Redis, PostgreSQL, http, thrift, ..
-          - Finagle’s code appears to me more mature, or at least more consistent
-        </section>
-
-        <section data-markdown>
-          ### Usability / User friendliness
-          * Finagle's `Future` is new for most Java devs
-          * `map`/`flatMap` are hard to use from pre Java 8
-
-
-          Note:
-          - - *Finagle* comes with its own `Future` type which is slightly different from the Scala version which isn’t bad per se. However, map/flatmap are hard to use from Java < 8
-          - + *Ribbon* has nice ORM for mapping to services (https://github.com/Netflix/ribbon/blob/master/ribbon-examples/src/main/java/com/netflix/ribbon/examples/rx/proxy/RxMovieProxyExample.java)
-          - + *Finagle* is very composable with Filters and Stacks (more on that later)
-        </section>
-
-        <section data-markdown>
-          ### Outcome
-          * We choose *Finagle*
-          * *Finagle* has shown good performance and reliability, it proved
-          easy to maintain and extend by our team.
-          * Pre Java 8 issues are mitigated by providing additional
-          libraries.
-
-
-          Note:
-          - the reliability and performance. In the end several applications run virtualised on the same hardware so better resource utilisation is appreciated.
-          - the maintainability
-          - The drawbacks are mitigated by providing additional Java 7 interfaces and by making sure we can use Java 8+ in production in parallel
-        </section>
-      </section>
 
       <section>
         <section data-markdown>
-          ## Why *Finagle* was so easy to use
-
-          Note:
-          TL;DR: Finagle is very modular and easy to extend due to the
-          application of Functional Programming principles and methods:
-          composability over inheritance
+          ## Finagle
         </section>
 
-
-
         <section data-markdown>
-          ### Short introduction
+          ### Intro
           * Based on [Your Service as a Function](http://monkey.org/~marius/funsrv.pdf) by [Marius Eriksen](http://monkey.org/~marius/)
           * Originated at Twitter and now used by a lot of companies (Foursquare, ING Bank, Pinterest, SoundCloud, Tumblr, Twitter)
           * Generic RPC Framework
@@ -332,23 +217,28 @@
 
         <section data-markdown>
           ### Main Components
+        </section>
 
+        <section data-markdown>
           For asynchronous execution:
           ```scala
           class Future[+A]
           ```
+        </section>
 
-          For abstraction of services:
+        <section data-markdown>
           ```scala
-          class Service[-In, +Out]
-          extends (Req) ⇒ Future[Rep]
+          class Service[-In, +Out] extends (Req) ⇒ Future[Rep]
           ```
+          ![stacks](images/service.png)
+        </section>
 
-          For modularisation:
+        <section data-markdown>
           ```scala
           class Filter[-ReqIn, +RepOut, +ReqOut, -RepIn]
-          extends (ReqIn, Service[ReqOut, RepIn]) ⇒ Future[RepOut]
+            extends (ReqIn, Service[ReqOut, RepIn]) ⇒ Future[RepOut]
           ```
+          ![stacks](images/filter.png)
 
           Note:
           - Future - Provides asynchronous execution
@@ -356,7 +246,128 @@
           - Filter - components that are meant to be stacked on top of other Services and Filters
         </section>
 
+
+
         <section data-markdown>
+          ### `Stack`
+          Uninstantied stack of filter to be, service factories, together with their configurations.
+          ![stacks](images/clientstack.svg)
+          Note:
+          * Default stack for clients
+        </section>
+
+        <section data-markdown>
+          ### Example: HTTP Call
+          ```scala
+          val connection = Http.client.newService("www.twitter.com:80")
+          val request    = RequestBuilder().url("www.twitter.com/").buildGet()
+          val futureRep  = connection(request)
+          // Blocking
+          println Await.result(futureRep)
+          // Nonblocking
+          futureRep onSuccess println
+          Await.ready(futureRep)
+          ```
+        </section>
+
+        <section data-markdown>
+          ### Example: Adding Time-out
+          ```scala
+          implicit val timer = DefaultTimer.twitter
+          connection(request).within(Duration.fromMilliseconds(30))
+          ```
+          ```scala
+          val timeoutFilter =
+          new TimeoutFilter[Request, Response](Duration.fromMilliseconds(30),
+          DefaultTimer.twitter)
+          val timedConnection = timeoutFilter.andThen(connection)
+          timedConnection(request)//.within(Duration.fromMilliseconds(10))
+          ```
+        </section>
+
+        <section data-markdown>
+          ## Implementing our requirements
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ### Performance logging
+            ```xml
+            <dependency>
+              <groupId>com.github.rlazoti</groupId>
+              <artifactId>finagle-metrics_${scala.compat.version}</artifactId>
+            </dependency
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          ### Health logging
+          * Add an Observer to the Observer filter, or
+          * Add a Filter
+        </section>
+
+        <section data-markdown>
+          ### Integrating Health Logging
+          ```scala
+          class HealthFilter[Req, Rep](component: Component, health: Health)
+          extends SimpleFilter[Req, Rep] {
+
+            def apply(request: Req, underlying: Service[Req, Rep]) : Future[Rep] = {
+              underlying(request) onSuccess { _ =>
+                health.healthy(component)
+              } onFailure {
+                case _: FailedFastException => health.broken(component)
+                case _ =>
+              }
+            }
+          }
+          ```
+          ```scala
+          val connection: Service[Request, Response] = Http.newService()
+          val monitoredConnection =
+          new HealthFilter(Component("api-x"), Health) andThen connection
+          ```
+        </section>
+
+
+        <section data-markdown>
+          ### Security / Authentication
+          * Additional filter and datatype wrapping the auth context and the http request.
+        </section>
+
+        <section data-markdown>
+          ### Integrating Authentication
+          ```scala
+          case class RequestWithAuth(request: Request, auth: AuthContext)
+          ```
+          ```scala
+          class AuthFilter[Rep] extends SimpleFilter[RequestWithAuth, Rep] {
+
+            def apply(req: RequestWithAuth, underlying: Service[Request, Rep]) : Future[Rep] = {
+              val request = req.request
+              val authHeaders = req.auth.getHeaders
+              val builder =
+                RequestBuilder()
+                  .url(s"http://${request.host.getOrElse("svc")}${request.uri}")
+                  .addHeaders(request.headerMap.toMap)
+                  .addHeaders(authHeaders)
+
+              val authRequest =
+                builder.build(request.method, Some(request.content))
+
+              underlying(authRequest)
+            }
+          }
+          ```
+        </section>
+
+
+        <section data-markdown>
+          ### Service-discovery
+          ![stacks](images/service-discovery.png)
+        </section>
+        <!-- <section data-markdown>
           ### `Var`
           ```scala
           trait Var[+T]
@@ -382,16 +393,17 @@
           * `Var` resembles `Observable` from RxJava somewhat but isn't meant to
           be a collection. Therefore it has no `filter` methods
         </section>
+
         <section data-markdown>
           ### `Name`
           Representing a service lookup, a `Name` is either `Bound` or a `Path`.
           * `Bound` consists of a `Var` of `Addr`
           * `Path` alias for a different path, changing the lookup
           * `Addr`
-              * `Bound` - Concrete addresses,
-              * `Failed` - Something went wrong,
-              * `Neg` - Name could not be found,
-              * `Pending` - Pending lookup,
+            * `Bound` - Concrete addresses,
+            * `Failed` - Something went wrong,
+            * `Neg` - Name could not be found,
+            * `Pending` - Pending lookup,
         </section>
 
         <section data-markdown>
@@ -401,48 +413,7 @@
           boundAddr.update(Addr.Bound(new InetSocketAddress("google.com", 80)))
           ```
 
-        </section>
-
-        <section data-markdown>
-          ### `Stack`
-          Uninstantied stack of filter to be, service factories, together with their configurations.
-          ![stacks](images/clientstack.svg)
-          Note:
-          * Default stack for clients
-        </section>
-
-<!--
-        <section data-markdown>
-          - ToDo: Insert example of how to change FA config and how to replace the `Failure Accrual` as a whole
-        </section>
--->
-        <section data-markdown>
-          ### Example: HTTP Call
-          ```scala
-          val connection = Http.client.newService("www.twitter.com:80")
-          val request    = RequestBuilder().url("www.twitter.com/").buildGet()
-          val futureRep  = connection(request)
-          // Blocking
-          println Await.result(futureRep)
-          // Nonblocking
-          futureRep onSuccess println
-          Await.ready(futureRep)
-          ```
-        </section>
-
-        <section data-markdown>
-### Example: Adding Time-out
-```scala
-implicit val timer = DefaultTimer.twitter
-connection(request).within(Duration.fromMilliseconds(30))
-```
-```scala
-val timeoutFilter =
-  new TimeoutFilter[Request, Response](Duration.fromMilliseconds(30),
-                                       DefaultTimer.twitter)
-val timedConnection = timeoutFilter.andThen(connection)
-```
-        </section>
+        </section> -->
 
         <section data-markdown>
           ### Integrating Service-Discovery
@@ -450,83 +421,120 @@ val timedConnection = timeoutFilter.andThen(connection)
           case class Instance(address: SocketAddress)
 
           trait ServiceDiscovery {
-            def discover(name: String) : Observable[Set[Instance]]
+            def discover(name: String) : rx.Observable[j.u.Collection[Instance]]
           }
           ```
         </section>
 
         <section data-markdown>
-```scala
-class OurResolver(discovery: ServiceDiscovery) {
-  def eval(name: String): Name = {
-    val instances = discovery.discover(name)
-    val res: Var[Addr] = Var.async[Addr](Addr.Pending) {
-      (updatable: Updatable[Addr]) =>
-        val subscriber =
-          instances.subscribe { instanceSet =>
-            updatable.update(Addr.Bound(instanceSet.map(_.address)))
-          }
-        instances.doOnError { reason =>
-          updatable.update(Addr.Failed(reason))
-        }
-        Closable.make(_ => Future(subscriber.unsubscribe()))
-    }
-    Name.Bound.singleton(res)
-  }
-}
-```
-        </section>
-
-        <section data-markdown>
-          ### Integrating Health Logging
           ```scala
-          class HealthFilter[Req, Rep](component: Component, health: Health)
-            extends SimpleFilter[Req, Rep] {
+          class OurResolver(discovery: ServiceDiscovery) {
+            def eval(service : String) : Name = {
+            val discoveredServices : Observable[util.Collection[Service]] =
+              serviceDiscovery.findServicesAsObservable(service)
 
-            def apply(request: Req, underlying: Service[Req, Rep]) : Future[Rep] = {
-              underlying(request) onSuccess { _ =>
-                health.healthy(component)
-              } onFailure {
-                case _: FailedFastException => health.broken(component)
-                case _ =>
-              }
+            val discoveredServicesVar : Var[util.Collection[Service]] =
+              observableToVar(Collections.emptyList[Service])(discoveredServices)
+
+            val addresses = discoveredServicesVar map { services =>
+              servicesToAddr(services.asScala.toList)
             }
+
+            Name.Bound(addresses, id = service)
+           }
           }
-          ```
-          ```scala
-          val connection: Service[Request, Response] = Http.newService()
-          val monitoredConnection =
-            new HealthFilter(Component("api-x"), Health) andThen connection
+          Note:
+          Left out the types of some methods
           ```
         </section>
 
         <section data-markdown>
-          ### Integrating Authentication
           ```scala
-          case class RequestWithAuth(request: Request, auth: AuthContext)
-          class AuthFilter[Rep](appName: String)
-            extends SimpleFilter[RequestWithAuth, Rep] {
-
-            def apply(request: Req, underlying: Service[Req, Rep]) : Future[Rep] = {
-              underlying(request) onSuccess { _ =>
-                health.healthy(component)
-              } onFailure {
-                case _: FailedFastException => health.broken(component)
-                case _ =>
-              }
+          def observableToVar[T](initial : T)(observable : Observable[T]) : Var[T] = {
+            val scalaObservable = JavaConversions.toScalaObservable(observable)
+            Var.async(initial) { (updatable : Updatable[T]) =>
+              val subscription = scalaObservable.subscribe(updatable.update _)
+              Closable.make(_ => Future(subscription.unsubscribe()))
             }
           }
           ```
         </section>
 
+        <section data-markdown>
+          ### Together
+        </section>
 
+        <section data-markdown>
+          ## Performance and Reliability
+        </section>
+        <section data-markdown>
+          ### Setup
+          - 1 machine running Gatling talking to
+          - 1 machine running production like setup (Tomcat 7 + Jersey + BIO adapter) talking to
+          - 2-8 Spray instances running on one machine echoing the request and checking for auth. headers
+        </section>
+        <section data-markdown>
+          ### Performance metrics
+          - 5500 RPS
+          - Finagle showed a smooth profile
+
+          Note:
+          - Both use Netty in the end… so why the difference?
+          - We didn't test all different sizes, especially only the smaller
+          messages < 8kb
+        </section>
+
+        <section data-markdown>
+          #### Reliability
+          * Failure detected as specified
+          * Changes in instances are picked up instantly
+        </section>
+
+        <section data-markdown>
+          ### Maintainability
+          * Helpful community ([mailing list](https://groups.google.com/forum/#!forum/finaglers), [gitter](https://gitter.im/twitter/finagle))
+          * *Finagle* is a RPC framework
+          * *Finagle* is composable, *Ribbon* is more static
+          * *Finagle* different modules are in the same style
+
+          Note:
+          - Finagle’s community was and is very helpful on the mailing list and Gitter
+          - Finagle is a generic RPC framework so, in contrast to Ribbon, it is re-usable for more than only the HTTP Client. This also makes it easy to re-use the integration with ING Bank infrastructure: our filters and SD integration.
+          - There are several projects to integrate finagle with other things: Zookeeper, Redis, PostgreSQL, http, thrift, ..
+          - Finagle’s code appears to me more mature, or at least more consistent
+        </section>
+
+        <section data-markdown>
+          ### Usability / User friendliness
+          * Finagle's `Future` is new for most Java devs
+          * `map`/`flatMap` are hard to use from pre Java 8
+
+
+          Note:
+          - - *Finagle* comes with its own `Future` type which is slightly different from the Scala version which isn’t bad per se. However, map/flatmap are hard to use from Java < 8
+          - + *Ribbon* has nice ORM for mapping to services (https://github.com/Netflix/ribbon/blob/master/ribbon-examples/src/main/java/com/netflix/ribbon/examples/rx/proxy/RxMovieProxyExample.java)
+          - + *Finagle* is very composable with Filters and Stacks (more on that later)
+        </section>
+
+        <section data-markdown>
+          ### Outcome
+          * We stuck with *Finagle*
+          * It has shown good performance and reliability, it proved
+          easy to maintain and extend by our team.
+          * Pre Java 8 issues are mitigated by providing additional libraries.
+
+
+          Note:
+          - the reliability and performance. In the end several applications run virtualised on the same hardware so better resource utilisation is appreciated.
+          - the maintainability
+          - The drawbacks are mitigated by providing additional Java 7 interfaces and by making sure we can use Java 8+ in production in parallel
+        </section>
       </section>
 
       <section>
         <section data-markdown>
-          ## Wrapping up
+          ## Retrospective
         </section>
-
         <section data-markdown>
           ### Finagle is not all roses
 
@@ -536,7 +544,6 @@ class OurResolver(discovery: ServiceDiscovery) {
           * For more, see the [RPC Redux talk](http://monkey.org/~marius/redux.html)
           * We had to build our own Java 7 interfaces, such as a HTTP Request Builder with support for JSON and such, but also because of the Scala type evidence didn’t really play nice with the Java compiler.
         </section>
-
         <section data-markdown>
           ### Experience from teams
           * Mixed,
@@ -557,6 +564,11 @@ class OurResolver(discovery: ServiceDiscovery) {
           - Teams are exposed to FP and Scala and are getting enthusiastic
           - We have a nice, integrated, HTTP client
         </section>
+      </section>
+
+
+
+
 
         <section data-markdown>
           ### Future
@@ -570,46 +582,46 @@ class OurResolver(discovery: ServiceDiscovery) {
           2. The discussion shouldn’t be Java vs Scala but on whether to move to the FP paradigm and the many benefits
           3. Use fact-based evidence to support your decisions
           4. Support from high(er)-management helps a lot
-              * Creates room to do the first three points
-              * Makes  other people more receptive to your story, sadly enough even with developers who should know better
+          * Creates room to do the first three points
+          * Makes  other people more receptive to your story, sadly enough even with developers who should know better
         </section>
-      </section>
-
-    </div>
-
-    <div class="footer">
-      <img src="images/logo.hd.png">
-    </div>
-  </div>
-
-  <script src="lib/js/head.min.js"></script>
-  <script src="js/reveal.js"></script>
-
-  <script>
-
-  // Full list of configuration options available at:
-  // https://github.com/hakimel/reveal.js#configuration
-  Reveal.initialize({
-    controls: true,
-    progress: true,
-    history: true,
-    center: true,
 
 
-    transition: 'slide', // none/fade/slide/convex/concave/zoom
+</div>
 
-    // Optional reveal.js plugins
-    dependencies: [
-      { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
-      { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-      { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-      { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-      { src: 'plugin/zoom-js/zoom.js', async: true },
-      { src: 'plugin/notes/notes.js', async: true }
-    ]
-  });
+<div class="footer">
+  <img src="images/logo.hd.png">
+</div>
+</div>
 
-  </script>
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.js"></script>
+
+<script>
+
+// Full list of configuration options available at:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+  controls: true,
+  progress: true,
+  history: true,
+  center: true,
+
+
+  transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+  // Optional reveal.js plugins
+  dependencies: [
+    { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+    { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+    { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+    { src: 'plugin/zoom-js/zoom.js', async: true },
+    { src: 'plugin/notes/notes.js', async: true }
+  ]
+});
+
+</script>
 
 </body>
 </html>
