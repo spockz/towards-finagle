@@ -8,22 +8,41 @@
 section.has-dark-background, section.has-dark-background h1, section.has-dark-background h2, section.has-dark-background h3, section.has-dark-background h4, section.has-dark-background h5, section.has-dark-background h6 {
   color: #fff; }
 
-.reveal .footer {
+
+
+.reveal .footer-container {
   position: absolute;
   background-color: rgba(255, 255, 255, 0.9);
   color: #a8a8a8;
   text-align: center;
-  min-width: 80%;
-  max-width: 80%;
+  min-width: 75%;
+  max-width: 75%;
   margin-left: 10%;
-  margin-right: 10%;
+  margin-right: 15%;
   bottom: 0em;
-  left: 1em;
+  /*left: 1em;*/
   font-size: 0.5em;
   height: 100px;
-  border: 1px solid #a8a8a8;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px; }
+  border:0;
+  border-top: 1px solid #a8a8a8;
+
+  border-top-left-radius: 20px;
+  /*border-top-right-radius: 10px;*/
+  }
+
+.reveal .footer-container::after {
+  background: url('../../images/logo.hd.png') no-repeat;
+  background-size: contain;
+  width: 14%;
+  height: 100px;
+  display: block;
+  content: "";
+  position: relative;
+  right:-17%;
+  top:-112px;
+  float:right;
+  /*border: 1px/ solid red*/
+}
 
 .footer > span {
   color: #a8a8a8 !important;
