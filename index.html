@@ -15,7 +15,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
   <link rel="stylesheet" href="css/reveal.css">
-  <link rel="stylesheet" href="css/theme/solarized.css" id="theme">
+  <link rel="stylesheet" href="css/theme/ing.css">
+
 
   <!-- Code syntax highlighting -->
   <link rel="stylesheet" href="lib/css/zenburn.css">
@@ -32,29 +33,11 @@
   <!--[if lt IE 9]>
   <script src="lib/js/html5shiv.js"></script>
   <![endif]-->
-
-  <style type="text/css" >
-  @media all {
-    .reveal .footer {
-      position: absolute;
-      bottom: 1em;
-      left: 1em;
-      font-size: 0.5em;
-    }
-  }
-  /*@media print {
-  .reveal .slides section .slide-background {
-  background-image: url('images/logo.hd.png');
-  background-repeat: no-repeat;
-  background-position: left bottom;
-}
-}*/
-</style>
 </head>
 
 <body>
 
-  <div class="reveal">
+  <div class="reveal convex center">
 
     <!-- Any section element inside of this container is displayed as a slide -->
     <div class="slides">
@@ -65,7 +48,7 @@
       </section>
 
       <section data-markdown>
-        ### Towards ~~Scala~~ Functional Programming with Finagle @ ING Bank
+        ### Towards ~~Scala~~ *Functional Programming* with Finagle @ ING Bank
         Note:
         * Many talks are on how to get Scala at enterprise, I believe it should be about FP not just Scala
         * I'm going to illustrate this through sharing how adopting Finagle has accelarated the acceptance
@@ -74,13 +57,16 @@
 
       <section data-markdown>
         ### Who am I
-        * Committed Functional Programmer for 8 years, in Haskell and Scala.
+        * 8 years Committed Functional Programmer
         * FP evangelist at ING Bank
-        * Maintainer of core libraries and frameworks
-        * Trainer in functional and reactive programming with Scala and Akka
+        * Trainer
         * Gets excited by opportunities to remove redundant code through abstraction.
         * Volleyball enthousiast, and referee
         * https://github.com/spockz
+
+        Note:
+        * Maintainer of core libraries and frameworks
+        * Trainer in functional and reactive programming with Scala and Akka
       </section>
 
       <section data-markdown>
@@ -89,7 +75,6 @@
         * 'Breakthrough'
         * Our task
         * Finagle
-        * Retrospective on Finagle
         * Future
         * Conclusion
       </section>
@@ -531,40 +516,6 @@
         </section>
       </section>
 
-      <section>
-        <section data-markdown>
-          ## Retrospective
-        </section>
-        <section data-markdown>
-          ### Finagle is not all roses
-
-          * Default config good 80-99% of the time
-          * Special cases require intimate knowledge of both Finagle and infrastructure
-          * Configuratoin is static so adapting to changes in the environment is hard.
-          * For more, see the [RPC Redux talk](http://monkey.org/~marius/redux.html)
-          * We had to build our own Java 7 interfaces, such as a HTTP Request Builder with support for JSON and such, but also because of the Scala type evidence didn’t really play nice with the Java compiler.
-        </section>
-        <section data-markdown>
-          ### Experience from teams
-          * Mixed,
-          * Just get it and fly off,
-          * Just don't,
-          * Few in between
-          * Modularity is hard to teach:
-          * Break things up in small functions and filters
-
-          Note:
-          Mixed - E.g. Some immediately grasp the possibilities, such as
-          modularity and ease of testing, of Filter others just don’t. We
-          haven’t found a way to explain Filters to them yet that sticks.
-        </section>
-
-        <section data-markdown>
-          ### Result
-          - Teams are exposed to FP and Scala and are getting enthusiastic
-          - We have a nice, integrated, HTTP client
-        </section>
-      </section>
 
 
 
@@ -589,10 +540,11 @@
 
 </div>
 
-<div class="footer">
-  <img src="images/logo.hd.png">
+<div class="footer reveal">
+  <span>Towards Functional Programming with Finagle </span>
+  <div><img src="images/logo.hd.png" style="width:160px; height: 40px;"/></div>
 </div>
-</div>
+
 
 <script src="lib/js/head.min.js"></script>
 <script src="js/reveal.js"></script>
@@ -602,7 +554,7 @@
 // Full list of configuration options available at:
 // https://github.com/hakimel/reveal.js#configuration
 Reveal.initialize({
-  controls: true,
+  controls: false,
   progress: true,
   history: true,
   center: true,
