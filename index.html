@@ -320,26 +320,34 @@
         </section>
 
         <section data-markdown>
-          ### Integrating Health Logging
-          ```scala
-          class HealthFilter[Req, Rep](component: Component, health: Health)
-          extends SimpleFilter[Req, Rep] {
+          <script type="text/template">
+### Integrating Health Logging
+```scala
+class HealthFilter[Req, Rep](component: Component,
+                             health: Health)
+  extends SimpleFilter[Req, Rep] {
 
-            def apply(request: Req, underlying: Service[Req, Rep]) : Future[Rep] = {
-              underlying(request) onSuccess { _ =>
-                health.healthy(component)
-              } onFailure {
-                case _: FailedFastException => health.broken(component)
-                case _ =>
-              }
-            }
-          }
-          ```
-          ```scala
-          val connection: Service[Request, Response] = Http.newService()
-          val monitoredConnection =
-          new HealthFilter(Component("api-x"), Health) andThen connection
-          ```
+  def apply(request: Req,
+            underlying: Service[Req, Rep]) : Future[Rep] = {
+    underlying(request) onSuccess { _ =>
+      health.healthy(component)
+    } onFailure {
+      case _: FailedFastException => health.broken(component)
+      case _                      =>
+    }
+  }
+}
+```
+          </script>
+        </section>
+        <section data-markdown>
+          <script type="text/template">
+```scala
+val connection: Service[Request, Response]
+val monitoredConnection =
+  new HealthFilter(Component("api-x"), Health) andThen connection
+```
+          </script>
         </section>
 
 
@@ -354,7 +362,8 @@
           case class RequestWithAuth(request: Request, auth: AuthContext)
           ```
           ```scala
-          class AuthFilter[Rep] extends Filter[RequestWithAuth, Request, Rep, Rep] {
+          class AuthFilter[Rep]
+            extends Filter[RequestWithAuth, Rep, Request, Rep] {
 
             def apply(req: RequestWithAuth, underlying: Service[Request, Rep]) : Future[Rep] = {
               val request = req.request

@@ -28,7 +28,7 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
 .reveal .hljs {
   background-color: transparent;
   color: rgb(51, 51, 51);
-  font-size: 1.5em;
+  font-size: 1.1em;
   line-height: 1em;
 }
 .reveal .hljs-title {
