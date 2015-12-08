@@ -22,7 +22,7 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
   bottom: 0em;
   /*left: 1em;*/
   font-size: 0.5em;
-  height: 100px;
+  height: 50px;
   border:0;
   border-top: 1px solid #a8a8a8;
 
@@ -34,22 +34,22 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
   background: url('../../images/logo.hd.png') no-repeat;
   background-size: contain;
   width: 14%;
-  height: 100px;
+  height: 50px;
   display: block;
   content: "";
   position: relative;
   right:-17%;
-  top:-112px;
+  top:-62px;
   float:right;
   /*border: 1px/ solid red*/
 }
 
 .footer > span {
   color: #a8a8a8 !important;
-  font-size: 36px;
+  font-size: 24px;
   position: absolute;
-  top: 30px;
-  left: 120px; }
+  top: 12px;
+  left: 12px; }
 
 .footer > div {
   position: absolute;
