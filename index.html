@@ -21,6 +21,20 @@
   <!-- Code syntax highlighting -->
   <link rel="stylesheet" href="lib/css/zenburn.css">
 
+  <style type="text/css">
+    #finagle {
+      padding:0;
+      margin: 0;
+    }
+    #finagle img {
+      box-shadow: none;
+    }
+    #intro img {
+      width: 18%;
+      box-shadow: none;
+    }
+  </style>
+
   <!-- Printing and PDF exports -->
   <script>
   var link = document.createElement( 'link' );
@@ -44,11 +58,11 @@
 
       <section data-markdown>
         ### Towards Scala with Finagle @ ING Bank
-
       </section>
 
       <section data-markdown>
-        ### Towards ~~Scala~~ *Functional Programming* with Finagle @ ING Bank
+        ### Towards ~~Scala~~ *Functional Programming*
+        #### Finagle as an prime FP example
         Note:
         * Many talks are on how to get Scala at enterprise, I believe it should be about FP not just Scala
         * I'm going to illustrate this through sharing how adopting Finagle has accelarated the acceptance
@@ -71,8 +85,7 @@
 
       <section data-markdown>
         ### Today
-        * ING Bank & Scala
-        * 'Breakthrough'
+        * ING Bank & Scala 'Breakthrough'
         * Our task
         * Finagle
         * Future
@@ -80,6 +93,12 @@
       </section>
 
       <section>
+        <section data-markdown>
+          ![European map](images/europe.png)
+          Note:
+          * 3500+ developers
+          * Always looking to make things simpler: architecture and code/-reuse
+        </section>
         <section data-markdown>
           ### Scala @ ING Bank
           - 3 years in the making
@@ -92,9 +111,9 @@
 
         <section data-markdown>
           ### The 'breakthrough'
-          * Exposure, promotion
-          * "Java vs Scala" -> "Functional Programming"
-          * Fact-based proof through PoC
+          1. Exposure, promotion
+          2. "Java vs Scala" → "Functional Programming"
+          3. Fact-based proof through PoC
 
           Note:
           - 2+ years of advertisement
@@ -114,7 +133,7 @@
 
       <section>
         <section data-markdown>
-          ## Our Task
+          ### Our Task
 
           Note:
           This is what gave us the 'permission' to keep doing scala
@@ -123,12 +142,11 @@
         <section data-markdown>
           ### Background
 
-          * From SOAP/XML / JMS
           * To REST API, microservices
 
           Note:
           - Current ING Landscape
-          - Many SOAP/JMS services exposed through multiple busses, almost every feature/page corresponds to a SOAP Service/Action
+          - Many SOAP/JMS services exposed through multiple buses, almost every feature/page corresponds to a SOAP Service/Action
           - Drawbacks:
           - Busses become SPOFs, and they have been somewhat unstable/overloaded, only so many connections possible per server.
           - Lots of overhead due to SOAP/XML
@@ -147,12 +165,12 @@
 
         <section data-markdown>
           ### Our Mission
-          > Create a “Resilient HTTP Client” to connect with and between APIS, which integrates / interfaces with existing ING Bank infrastructure
+          > Create a “Resilient HTTP Client” to connect with and between APIS, which integrates with existing ING Bank infrastructure
           Note:
           * One of the tasks of the API Platform
         </section>
         <section data-markdown>
-          #### Requirements
+          ### Requirements
           - Performance logging
           - Health logging
           - Security / Authentication
@@ -160,12 +178,14 @@
           - Uniform Configuration
         </section>
         <section data-markdown>
-          #### Requirements - continued
+          ### Requirements - continued
           - ‘easy’ to use
           - JVM 6+,
-          - J2EE Independent
+          - Spring Independent
           - Requirement from the team
             > We want to use our time efficiently and spent most of our time implementing ING Bank specific features.
+          Note:
+          * We could be modern with this code, so 6+, but we had to 7+ anyway.
         </section>
 
         <section data-markdown>
@@ -188,16 +208,23 @@
 
       <section>
         <section data-markdown>
-          ## Finagle
+          <script type="text/template">
+            <!-- .slide: id="finagle" -->
+            ![Finagle](images/finagle.png)
+          </script>
         </section>
 
         <section data-markdown>
-          ### Intro
-          * Based on [Your Service as a Function](http://monkey.org/~marius/funsrv.pdf) by [Marius Eriksen](http://monkey.org/~marius/)
-          * Originated at Twitter and now used by a lot of companies (Foursquare, ING Bank, Pinterest, SoundCloud, Tumblr, Twitter)
-          * Generic RPC Framework
-          * Originally in FP style Java,
-          * Now in Scala
+          <script type="text/template">
+            <!-- .slide: id="intro" -->
+            ### Intro
+            * [Your Service as a Function](http://monkey.org/~marius/funsrv.pdf) by [Marius Eriksen](http://monkey.org/~marius/)
+            * ![Twitter](images/twitter.png)
+            * ![FourSquare](images/foursquare-wordmark.png) ![ING Bank](images/logo.hd.png) ![PInterest](images/pinterest.png) ![SoundCloud]](images/soundcloud.png) ![Tumblr](images/tumblr.png)
+            * Generic RPC Framework
+            * Originally in FP style Java,
+            * Now in Scala
+          </script>
         </section>
 
         <section data-markdown>
@@ -234,8 +261,8 @@
 
 
         <section data-markdown>
-          ### `Stack`
-          Uninstantied stack of filter to be, service factories, together with their configurations.
+          ### Stacks
+          * Filter factories + configuration
           ![stacks](images/clientstack.svg)
           Note:
           * Default stack for clients
@@ -327,7 +354,7 @@
           case class RequestWithAuth(request: Request, auth: AuthContext)
           ```
           ```scala
-          class AuthFilter[Rep] extends SimpleFilter[RequestWithAuth, Rep] {
+          class AuthFilter[Rep] extends Filter[RequestWithAuth, Request, Rep, Rep] {
 
             def apply(req: RequestWithAuth, underlying: Service[Request, Rep]) : Future[Rep] = {
               val request = req.request
@@ -349,58 +376,14 @@
 
 
         <section data-markdown>
-          ### Service-discovery
+          ### Service Discovery
           ![stacks](images/service-discovery.png)
-        </section>
-        <!-- <section data-markdown>
-          ### `Var`
-          ```scala
-          trait Var[+T]
-          ```
 
-          Embodiment of something that can change, with a `map`, `flatMap`,
-          and a `join` function. The essence here is that each reference to a
-          `Var` itself is stable but its contents can change.
-
-          ```scala
-          > val myVar = new ReadWriteVar(4)
-          myVar: ReadWriteVar[Int] = Var(4)@241932831
-          > val dependentVar = myVar map (_ * 2)
-          dependentVar: Var[Int] = com.twitter.util.Var$$anon$2@61845402
-          > dependentVar.sample
-          res9: Int = 8
-          > myVar.update(21)
-
-          > dependentVar.sample
-          res11: Int = 42
-          ```
           Note:
-          * `Var` resembles `Observable` from RxJava somewhat but isn't meant to
-          be a collection. Therefore it has no `filter` methods
+          * This abstraction of describing instances (including `Var`) makes it easy to integrate any SD impl with Finagle.
         </section>
 
-        <section data-markdown>
-          ### `Name`
-          Representing a service lookup, a `Name` is either `Bound` or a `Path`.
-          * `Bound` consists of a `Var` of `Addr`
-          * `Path` alias for a different path, changing the lookup
-          * `Addr`
-            * `Bound` - Concrete addresses,
-            * `Failed` - Something went wrong,
-            * `Neg` - Name could not be found,
-            * `Pending` - Pending lookup,
-        </section>
-
-        <section data-markdown>
-          ```scala
-          val boundAddr: Var[Addr] = new ReadWriteVar(Addr.Pending)
-          val boundName = Name.Bound(boundAddr)
-          boundAddr.update(Addr.Bound(new InetSocketAddress("google.com", 80)))
-          ```
-
-        </section> -->
-
-        <section data-markdown>
+        <!-- <section data-markdown>
           ### Integrating Service-Discovery
           ```scala
           case class Instance(address: SocketAddress)
@@ -428,35 +411,33 @@
             Name.Bound(addresses, id = service)
            }
           }
+          ```
           Note:
           Left out the types of some methods
-          ```
-        </section>
-
-        <section data-markdown>
-          ```scala
-          def observableToVar[T](initial : T)(observable : Observable[T]) : Var[T] = {
-            val scalaObservable = JavaConversions.toScalaObservable(observable)
-            Var.async(initial) { (updatable : Updatable[T]) =>
-              val subscription = scalaObservable.subscribe(updatable.update _)
-              Closable.make(_ => Future(subscription.unsubscribe()))
-            }
-          }
-          ```
-        </section>
+        </section> -->
 
         <section data-markdown>
           ### Together
+          ```scala
+          val resolvedService = new OurResolver(..).eval("api-x")
+          val ingConnection =
+            new HealthFilter(Component("api-x"), Health)
+             .andThen(new AuthFilter())
+             .andThen(Httpx.client.newService(resolvedService, "api-x"))
+          ```
         </section>
 
         <section data-markdown>
           ## Performance and Reliability
+          Note:
+          * Not just form over function!
         </section>
         <section data-markdown>
           ### Setup
           - 1 machine running Gatling talking to
           - 1 machine running production like setup (Tomcat 7 + Jersey + BIO adapter) talking to
-          - 2-8 Spray instances running on one machine echoing the request and checking for auth. headers
+          - 0-8 Spray instances running on one machine echoing the request and checking for auth. headers
+          todo Image
         </section>
         <section data-markdown>
           ### Performance metrics
@@ -502,10 +483,9 @@
         </section>
 
         <section data-markdown>
-          ### Outcome
-          * We stuck with *Finagle*
-          * It has shown good performance and reliability, it proved
-          easy to maintain and extend by our team.
+          ### Short recap
+
+          * It has shown good performance and reliability, it proved easy to maintain and extend by our team.
           * Pre Java 8 issues are mitigated by providing additional libraries.
 
 
@@ -514,21 +494,48 @@
           - the maintainability
           - The drawbacks are mitigated by providing additional Java 7 interfaces and by making sure we can use Java 8+ in production in parallel
         </section>
+
+        <section data-markdown>
+          ### Finagle is not all roses
+
+          * Default config good 80-99% of the time
+          * Special cases require intimate knowledge of both Finagle and infrastructure
+          * Configuratoin is static so adapting to changes in the environment is hard.
+          * For more, see the [RPC Redux talk](http://monkey.org/~marius/redux.html)
+          * We had to build our own Java 7 interfaces, such as a HTTP Request Builder with support for JSON and such, but also because of the Scala type evidence didn’t really play nice with the Java compiler.
+        </section>
+
+        <section data-markdown>
+          ### FP Architecture ≠ guaranteed success
+          * Mixed adoption of filters
+          * Modularisation is hard to teach
+
+          Note:
+          * Mixed - E.g. Some immediately grasp the possibilities, such as
+          modularity and ease of testing, of Filter others just don’t. We
+          haven’t found a way to explain Filters to them yet that sticks.
+        </section>
+
+        <section data-markdown>
+          ### At the end of the day
+          * Teams are exposed to FP and Scala and are getting enthusiastic
+          * We have a nice, integrated, HTTP client
+          * We will stick with *Finagle*
+        </section>
       </section>
 
 
 
 
 
-
+      <section>
         <section data-markdown>
-          ### Future
-          - We will look into giving Finagle training in addition to the Scala and Akka training already in place.
-          - The API Platform team is looking into giving back to the community by open sourcing some of our tools and by giving back more to the Finagle project.
+          ### Conclusion
         </section>
 
+
         <section data-markdown>
-          ## Conclusion
+          ### Conclusion
           1. Introducing new paradigms in large organisation takes a lot of time and good timing
           2. The discussion shouldn’t be Java vs Scala but on whether to move to the FP paradigm and the many benefits
           3. Use fact-based evidence to support your decisions
@@ -537,14 +544,20 @@
           * Makes  other people more receptive to your story, sadly enough even with developers who should know better
         </section>
 
-
+        <section data-markdown>
+          ### Future Work
+          - We will look into giving Finagle training in addition to the Scala and Akka training already in place.
+          - The API Platform team is looking into giving back to the community by open sourcing some of our tools and by giving back more to the Finagle project.
+          - HOCON for Finagle
+        </section>
+      </section>
   </div>
 
 
   <div class="footer-container">
     <div class="footer reveal">
       <span>Towards Functional Programming with Finagle </span>
-      
+
     </div>
   </div>
 </div>
@@ -563,6 +576,8 @@ Reveal.initialize({
   history: true,
   center: true,
 
+  width: 1000,
+  height: 700,
 
   transition: 'slide', // none/fade/slide/convex/concave/zoom
 
