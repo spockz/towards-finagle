@@ -60,8 +60,8 @@ section.has-dark-background, section.has-dark-background h1, section.has-dark-ba
   font-size: 0.5em;
   height: 50px;
   border:0;
+  /*border-top: 1px solid #a8a8a8;*/
   border-top: 1px solid #a8a8a8;
-
   border-top-left-radius: 20px;
   /*border-top-right-radius: 10px;*/
   }
