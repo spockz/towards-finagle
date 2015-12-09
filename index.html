@@ -316,8 +316,8 @@
         <section data-markdown>
           ### Example: HTTP Call
           ```scala
-          val connection = Http.client.newService("www.twitter.com:80")
-          val request    = RequestBuilder().url("www.twitter.com/").buildGet()
+          val connection = Http.client.newService("api.ing.nl:80")
+          val request    = RequestBuilder().url("api.ing.nl/").buildGet()
           val futureRep  = connection(request)
           // Blocking
           println Await.result(futureRep)
@@ -333,13 +333,15 @@
           implicit val timer = DefaultTimer.twitter
           connection(request).within(Duration.fromMilliseconds(30))
           ```
-          ```scala
-          val timeoutFilter =
-          new TimeoutFilter[Request, Response](Duration.fromMilliseconds(30),
-          DefaultTimer.twitter)
-          val timedConnection = timeoutFilter.andThen(connection)
-          timedConnection(request)//.within(Duration.fromMilliseconds(10))
-          ```
+        </section>
+        <section data-markdown>
+```scala
+val timeoutFilter =
+  new TimeoutFilter[Request, Response](30 milliseconds,
+                                       DefaultTimer.twitter)
+val timedConnection = timeoutFilter.andThen(connection)
+timedConnection(request)//.within(30 milliseconds)
+```
         </section>
 
         <section data-markdown>
@@ -475,10 +477,14 @@ class AuthFilter[Rep]
           ### Together
           ```scala
           val resolvedService : Name = new OurResolver(…).eval("api-x")
-          val ingConnection =
+
+          val ingFilters    =
             new HealthFilter(Component("api-x"), Health)
-             .andThen(new AuthFilter())
-             .andThen(Httpx.client.newService(resolvedService, "api-x"))
+              .andThen(new AuthFilter())
+
+          val ingConnection : Service[RequestWithAuth, Response] =
+            ingFilters
+              .andThen(Httpx.client.newService(resolvedService, "api-x"))
           ```
         </section>
 
@@ -591,8 +597,10 @@ class AuthFilter[Rep]
           - More training,
           - Open Sourcing,
           - HOCON for Finagle
+
           Note:
           * The API Platform team is looking into giving back to the community by open sourcing some of our tools and by giving back more to the Finagle project.
+          * Use all cool new Finagle features
         </section>
       </section>
 
