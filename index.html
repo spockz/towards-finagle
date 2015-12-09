@@ -33,6 +33,21 @@
       width: 18%;
       box-shadow: none;
     }
+
+    blockquote p:before {
+      content: "\201C";
+    }
+
+    blockquote p:after {
+      content: "\201D";
+    }
+
+    section.ul-left ul {
+      float:left;
+    }
+    section.image-right img {
+      float:right;
+    }
   </style>
 
   <!-- Printing and PDF exports -->
@@ -77,15 +92,11 @@
         * Excited by abstracting redundant code
         * Volleyball enthousiast, and referee
         * https://github.com/spockz
-
-        Note:
-        * Maintainer of core libraries and frameworks
-        * Trainer in functional and reactive programming with Scala and Akka
       </section>
 
       <section data-markdown>
         ### Today
-        * ING Bank & Scala 'Breakthrough'
+        * ING Bank & Scala (FP) 'Breakthrough'
         * Our task
         * Finagle
         * Future
@@ -96,8 +107,10 @@
         <section data-markdown>
           ![European map](images/europe.png)
           Note:
-          * 3500+ developers
+          * 3000+ developers, always room for one more brilliant mind
           * Always looking to make things simpler: architecture and code/-reuse
+          * Maintainer of core libraries and frameworks as part of API Platform team
+          * Trainer in functional and reactive programming with Scala and Akka
         </section>
         <section data-markdown>
           ### Scala @ ING Bank
@@ -106,7 +119,7 @@
 
           Note:
           - Somehow the successful projects didn't get followed up by other succesful Scala projects
-          - perhaps because of not enough developers and unfamiliarity with the code
+          - perhaps because of a lack of scala developers and unfamiliarity with FP/Scala
         </section>
 
         <section data-markdown>
@@ -142,7 +155,7 @@
         <section data-markdown>
           ### Background
 
-          * To REST API, microservices
+          To: REST APIs, microservices
 
           Note:
           - Current ING Landscape
@@ -171,6 +184,8 @@
         </section>
         <section data-markdown>
           ### Requirements
+          ![Landscape](images/landscape.png)
+          Note:
           - Performance logging
           - Health logging
           - Security / Authentication
@@ -183,7 +198,9 @@
           - JVM 6+,
           - Spring Independent
           - Requirement from the team
+
             > We want to use our time efficiently and spent most of our time implementing ING Bank specific features.
+
           Note:
           * We could be modern with this code, so 6+, but we had to 7+ anyway.
         </section>
@@ -198,10 +215,7 @@
           - *Finagle*
 
           Note:
-          - Choose to PoC between Ribbon and Finagle even though it was
-          “suggested” to just use Ribbon as it would be familiar to
-          developers because it uses RxJava and, moreover, because Hystrix
-          was proven to work by and within our home-brew API Framework.
+          - Several existing tools, the first three are low-level clients, which do not offer the
         </section>
       </section>
 
@@ -357,36 +371,37 @@ val monitoredConnection =
         </section>
 
         <section data-markdown>
-          ### Integrating Authentication
-          ```scala
-          case class RequestWithAuth(request: Request, auth: AuthContext)
-          ```
-          ```scala
-          class AuthFilter[Rep]
-            extends Filter[RequestWithAuth, Rep, Request, Rep] {
+          <script type="text/template">
+### Integrating Authentication
+```scala
+case class RequestWithAuth(request: Request, auth: AuthContext)
+```
+```scala
+class AuthFilter[Rep]
+  extends Filter[RequestWithAuth, Rep, Request, Rep] {
 
-            def apply(req: RequestWithAuth, underlying: Service[Request, Rep]) : Future[Rep] = {
-              val request = req.request
-              val authHeaders = req.auth.getHeaders
-              val builder =
-                RequestBuilder()
-                  .url(s"http://${request.host.getOrElse("svc")}${request.uri}")
-                  .addHeaders(request.headerMap.toMap)
-                  .addHeaders(authHeaders)
+  def apply(req: RequestWithAuth,
+            underlying: Service[Request, Rep]) : Future[Rep] = {
+    val request = req.request
+    val authHeaders = req.auth.getHeaders
+    val builder =
+      toBuilder(request)
+        .addHeaders(authHeaders)
 
-              val authRequest =
-                builder.build(request.method, Some(request.content))
+    val authRequest =
+      builder.build(request.method, Some(request.content))
 
-              underlying(authRequest)
-            }
-          }
-          ```
+    underlying(authRequest)
+  }
+}
+```
+          </script>
         </section>
 
 
         <section data-markdown>
           ### Service Discovery
-          ![stacks](images/service-discovery.png)
+          ![stacks](images/service-discovery2.png)
 
           Note:
           * This abstraction of describing instances (including `Var`) makes it easy to integrate any SD impl with Finagle.
@@ -428,7 +443,7 @@ val monitoredConnection =
         <section data-markdown>
           ### Together
           ```scala
-          val resolvedService = new OurResolver(..).eval("api-x")
+          val resolvedService : Name = new OurResolver(…).eval("api-x")
           val ingConnection =
             new HealthFilter(Component("api-x"), Health)
              .andThen(new AuthFilter())
@@ -443,8 +458,11 @@ val monitoredConnection =
         </section>
         <section data-markdown>
           ### Setup
+          ![Benchmark Setup](images/setup.png)
+
+          Note:
           - 1 machine running Gatling talking to
-          - 1 machine running production like setup (Tomcat 7 + Jersey + BIO adapter) talking to
+          - 1 machine running production like setup talking to
           - 0-8 Spray instances running on one machine echoing the request and checking for auth. headers
           todo Image
         </section>

@@ -167,7 +167,7 @@ body {
 .reveal video,
 .reveal iframe {
   max-width: 95%;
-  max-height: 95%; }
+  max-height: 75%; }
 
 .reveal strong,
 .reveal b {
