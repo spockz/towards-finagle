@@ -480,46 +480,39 @@ class AuthFilter[Rep]
         <section data-markdown>
           #### Reliability
           * Failure detected as specified
-          * Changes in instances are picked up instantly
+          * Changes in instances were picked up instantly
         </section>
 
         <section data-markdown>
           ### Maintainability
           * Helpful community ([mailing list](https://groups.google.com/forum/#!forum/finaglers), [gitter](https://gitter.im/twitter/finagle))
-          * *Finagle* is a RPC framework
-          * *Finagle* is composable, *Ribbon* is more static
-          * *Finagle* different modules are in the same style
+          * Generic RPC framework
+          * Composable
+          * *Finagle*'s different modules are in the same style
 
           Note:
           - Finagle’s community was and is very helpful on the mailing list and Gitter
-          - Finagle is a generic RPC framework so, in contrast to Ribbon, it is re-usable for more than only the HTTP Client. This also makes it easy to re-use the integration with ING Bank infrastructure: our filters and SD integration.
+          - Finagle is a generic RPC framework so, it is re-usable for more than only the HTTP Client. This also makes it easy to re-use the integration with ING Bank infrastructure: our filters and SD integration.
           - There are several projects to integrate finagle with other things: Zookeeper, Redis, PostgreSQL, http, thrift, ..
-          - Finagle’s code appears to me more mature, or at least more consistent
+          - Finagle’s code appears to be mature, or at least consistent
         </section>
 
         <section data-markdown>
           ### Usability / User friendliness
-          * Finagle's `Future` is new for most Java devs
+          * Unfamiliarity with Finagle's `Future`
           * `map`/`flatMap` are hard to use from pre Java 8
 
 
           Note:
-          - - *Finagle* comes with its own `Future` type which is slightly different from the Scala version which isn’t bad per se. However, map/flatmap are hard to use from Java < 8
-          - + *Ribbon* has nice ORM for mapping to services (https://github.com/Netflix/ribbon/blob/master/ribbon-examples/src/main/java/com/netflix/ribbon/examples/rx/proxy/RxMovieProxyExample.java)
-          - + *Finagle* is very composable with Filters and Stacks (more on that later)
+          * Finagle's Future w/ map/flatMap is new for most of our Java devs
+          * *Finagle* comes with its own `Future` type which is slightly different from the Scala version which isn’t bad per se. However, map/flatmap are hard to use from Java < 8
         </section>
 
         <section data-markdown>
           ### Short recap
 
-          * It has shown good performance and reliability, it proved easy to maintain and extend by our team.
-          * Pre Java 8 issues are mitigated by providing additional libraries.
-
-
-          Note:
-          - the reliability and performance. In the end several applications run virtualised on the same hardware so better resource utilisation is appreciated.
-          - the maintainability
-          - The drawbacks are mitigated by providing additional Java 7 interfaces and by making sure we can use Java 8+ in production in parallel
+          * good performance and reliability
+          * easy to maintain and extend
         </section>
 
         <section data-markdown>
@@ -548,6 +541,10 @@ class AuthFilter[Rep]
           * Teams are exposed to FP and Scala and are getting enthusiastic
           * We have a nice, integrated, HTTP client
           * We will stick with *Finagle*
+          Note:
+          - the reliability and performance. In the end several applications run virtualised on the same hardware so better resource utilisation is appreciated.
+          - the maintainability
+          - The drawbacks are mitigated by providing additional Java 7 interfaces and by making sure we can use Java 8+ in production in parallel
         </section>
       </section>
 
