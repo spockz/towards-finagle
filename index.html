@@ -26,7 +26,7 @@
       padding:0;
       margin: 0;
     }
-    #finagle img {
+    .reveal img {
       box-shadow: none;
     }
     #intro img {
@@ -109,6 +109,12 @@
           Note:
           * 3000+ developers, always room for one more brilliant mind
           * Always looking to make things simpler: architecture and code/-reuse
+          * Maintainer of core libraries and frameworks as part of API Platform team
+          * Trainer in functional and reactive programming with Scala and Akka
+        </section>
+        <section data-markdown>
+          ![Netherlands map](images/netherlands.png)
+          Note:
           * Maintainer of core libraries and frameworks as part of API Platform team
           * Trainer in functional and reactive programming with Scala and Akka
         </section>
@@ -235,8 +241,9 @@
             * [Your Service as a Function](http://monkey.org/~marius/funsrv.pdf) by [Marius Eriksen](http://monkey.org/~marius/)
             * ![Twitter](images/twitter.png)
             * ![FourSquare](images/foursquare-wordmark.png) ![ING Bank](images/logo.hd.png) ![PInterest](images/pinterest.png) ![SoundCloud]](images/soundcloud.png) ![Tumblr](images/tumblr.png)
+            * Originally in Java
+            Note:
             * Generic RPC Framework
-            * Originally in FP style Java,
             * Now in Scala
           </script>
         </section>
@@ -246,16 +253,14 @@
         </section>
 
         <section data-markdown>
-          For asynchronous execution:
+          ### Asynchronous execution
           ```scala
           class Future[+A]
           ```
         </section>
 
         <section data-markdown>
-          ```scala
-          class Service[-In, +Out] extends (Req) ⇒ Future[Rep]
-          ```
+          ### Service as a Function
           ![stacks](images/service.png)
         </section>
 
@@ -271,15 +276,31 @@
           - Service - Abstraction of services, function that takes input and generates a future output
           - Filter - components that are meant to be stacked on top of other Services and Filters
         </section>
+        <section data-markdown>
+          ![stacks](images/f-c.png)
+          Note:
+          Function composition
+        </section>
 
 
 
         <section data-markdown>
           ### Stacks
+          ![A Stack](images/stack.png)
+          Note:
           * Filter factories + configuration
+        </section>
+
+        <section data-markdown>
+          ### Default Client Stack
           ![stacks](images/clientstack.svg)
           Note:
-          * Default stack for clients
+          * There are three levels of abstraction: service, instance, and connection level, each with own stack.
+          * By inserting a TimeOutFilter in a different stack we get different behaviour, timeout on a whole, on an instance or on a connection.
+          * Default stack for clients adding a filter on a different spot means
+            different behaviour with the same code. Trading complexitity in code
+            for complexity in configuration. Analagous to tradeoff when moving
+            from monolithic to microservices.
         </section>
 
         <section data-markdown>
@@ -478,8 +499,10 @@ class AuthFilter[Rep]
         </section>
 
         <section data-markdown>
-          #### Reliability
+          ### Reliability
           * Failure detected as specified
+          * Near-Instant updates
+          Note:
           * Changes in instances were picked up instantly
         </section>
 
@@ -516,13 +539,17 @@ class AuthFilter[Rep]
         </section>
 
         <section data-markdown>
-          ### Finagle is not all roses
+          ### A sober note
 
-          * Default config good 80-99% of the time
+          * Default config good 80% of cases
+          * Configuration is static
+          * [RPC Redux talk](http://monkey.org/~marius/redux.html)
+
+          Note:
           * Special cases require intimate knowledge of both Finagle and infrastructure
-          * Configuratoin is static so adapting to changes in the environment is hard.
+          * Configuration is static so adapting to changes in the environment is hard.
           * For more, see the [RPC Redux talk](http://monkey.org/~marius/redux.html)
-          * We had to build our own Java 7 interfaces, such as a HTTP Request Builder with support for JSON and such, but also because of the Scala type evidence didn’t really play nice with the Java compiler.
+          * FP, We had to build our own Java 7 interfaces, such as a HTTP Request Builder with support for JSON and such, but also because of the Scala type evidence didn’t really play nice with the Java compiler.
         </section>
 
         <section data-markdown>
@@ -531,20 +558,31 @@ class AuthFilter[Rep]
           * Modularisation is hard to teach
 
           Note:
+          * Getting out of the comfort zone is hard, especially without training
           * Mixed - E.g. Some immediately grasp the possibilities, such as
           modularity and ease of testing, of Filter others just don’t. We
           haven’t found a way to explain Filters to them yet that sticks.
         </section>
 
-        <section data-markdown>
+        <section data-markdown id="end-of-day">
           ### At the end of the day
-          * Teams are exposed to FP and Scala and are getting enthusiastic
-          * We have a nice, integrated, HTTP client
+          * Teams exposed to FP / Scala and are getting enthusiastic
+          * Nice, integrated, HTTP client
           * We will stick with *Finagle*
+
           Note:
           - the reliability and performance. In the end several applications run virtualised on the same hardware so better resource utilisation is appreciated.
           - the maintainability
           - The drawbacks are mitigated by providing additional Java 7 interfaces and by making sure we can use Java 8+ in production in parallel
+        </section>
+
+        <section data-markdown>
+          ### Future Work
+          - More training,
+          - Open Sourcing,
+          - HOCON for Finagle
+          Note:
+          * The API Platform team is looking into giving back to the community by open sourcing some of our tools and by giving back more to the Finagle project.
         </section>
       </section>
 
@@ -564,18 +602,11 @@ class AuthFilter[Rep]
           2. The discussion shouldn’t be Java vs Scala but on whether to move to the FP paradigm and the many benefits
           3. Use fact-based evidence to support your decisions
           4. Support from high(er)-management helps a lot
-          * Creates room to do the first three points
-          * Makes  other people more receptive to your story, sadly enough even with developers who should know better
+            * Creates room to do the first three points
+            * Makes  other people more receptive to your story, sadly enough even with developers who should know better
         </section>
 
-        <section data-markdown>
-          ### Future Work
-          - More training,
-          - Open Sourcing,
-          - HOCON for Finagle
-          Note:
-          * The API Platform team is looking into giving back to the community by open sourcing some of our tools and by giving back more to the Finagle project.
-        </section>
+
       </section>
   </div>
 
